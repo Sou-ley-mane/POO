@@ -1,0 +1,20 @@
+{
+    "name": "souleymane/poo-wane",
+    "autoload": {
+        "psr-4": {
+            "App\\Core\\": "core/",
+            "App\\Model\\": "models/",
+            "App\\Controller\\": "controllers/",
+            "App\\Exception\\": "exceptions/"
+
+
+        }
+    },
+    "authors": [{
+        "name": "souleymane diallo",
+        "email": "diallosouley337@gmail.com"
+    }],
+    "require": {
+
+    }
+}
