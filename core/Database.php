@@ -44,8 +44,9 @@ return $result;
     public function executeUpdate(string $sql,array $datas=[]):int{
         $query=$this->pdo->prepare($sql);  
         $query->execute($datas);
-        $result=$query->rowCount();
-        return $result;
+        return ($query->rowCount()>=1)?  $this->pdo->lastInsertId():$query->rowCount();
+        // $result=$query->rowCount();
+        // return $result;
         //NB: Insert==>On return le dernier id (dans la BDD)
     }
 

@@ -51,7 +51,7 @@ class Classe extends Model{
     //  }
      //Requete de données
      public static function findAll():array{
-        $sql="SELECT id FROM ".parent::nomTable()."";
+        $sql="SELECT * FROM classe ";
         return parent::findBy($sql,[]);
         // $sql="SELECT nom_complet, role, grade FROM ".parent::nomTable()." WHERE role  LIKE ? ";
         // echo "classe";
@@ -137,4 +137,16 @@ class Classe extends Model{
     {
         return $this->id;
     }
+
+    public function insert():int{
+        $sql="INSERT INTO ".parent::nomTable()." (filiere,niveau) VALUES (?,?)";
+        $bdd=parent::database();
+        $bdd->connexionBDD();
+        $result=$bdd->executeUpdate($sql,[$this->filiere,$this->niveau]);
+        $bdd->closeConnexion();
+        return $result;
+      
+    }
+    
+
 }

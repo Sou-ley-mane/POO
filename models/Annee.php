@@ -17,4 +17,9 @@ class Annee extends Model{
         //REQUETE SQL
         return[];
     } 
+    public static function findAll():array{
+        $sql="SELECT * FROM annee ";
+        return parent::findBy($sql,[]);
+       
+    }
 }

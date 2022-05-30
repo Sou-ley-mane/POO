@@ -14,4 +14,10 @@ $this->render("attache/attache.html.php",[
     "titre"=>"LISTE DES ATTACHES"
 ]);
     }
+
+
+    public function delete(){
+        Attache::delete(1);
+        echo "supprimer";
+    }
 }

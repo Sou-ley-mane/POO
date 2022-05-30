@@ -1,20 +1,11 @@
-h1 {
-    text-align: center;
-    padding: 1.5rem;
+.modalModul {
+    display: none;
 }
 
-.menu {
-    display: flex;
-    justify-content: space-around;
+.afficheModal {
+    display: block;
 }
 
-nav {
-    background-color: black;
-    padding: 2em;
-}
-
-li {
-    list-style: none;
-    text-decoration: none;
-    /* columns: white; */
+.fermerModal {
+    display: none;
 }

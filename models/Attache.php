@@ -25,7 +25,7 @@ class Attache extends User{
     }  
     
     public static function findAll():array{
-        $sql="SELECT `nom_complet`, `role`, `login`,`password`  FROM ".parent::nomTable()." WHERE role  LIKE ? ";
+        $sql="SELECT `id`, `nom_complet`, `role`, `login`,`password`  FROM ".parent::nomTable()." WHERE role  LIKE ? ";
 
         // $sql="SELECT nom_complet, role, grade FROM ".parent::nomTable()." WHERE role  LIKE ? ";
         return parent::findBy($sql,[self::gestionDesRoles()]);

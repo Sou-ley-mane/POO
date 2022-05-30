@@ -6,6 +6,10 @@ class Etudiant extends User{
     private string $matricule;
     private string $adresse;
     private string $sexe;
+    protected string $passwoed;
+    protected string $login;
+    // private string $sexe;
+
     private Classe $classe;
 //Constructeur
     public function __construct(){
@@ -93,13 +97,13 @@ class Etudiant extends User{
     }
 
     public function insert():int{
-        $sql="INSERT INTO ".parent::nomTable()." (nom_complet, role, matricule,login,password,adresse,sexe) VALUES (?,?,?,?,?,?,?)";
+        $sql="INSERT INTO " .parent::nomTable()." (nom_complet, role,login,adresse,sexe,matricule,password) VALUES (?,?,?,?,?,?,?)";
         //Creation d'un objet de type database
         $bdd=parent::database();
         //Application de la methode connexionBDD
         $bdd->connexionBDD();
         //Execution de requete a partir de la base de données
-        $result=$bdd->executeUpdate($sql,[$this->nomComplet,self::gestionDesRoles(),$this->matricule,$this->login,$this->password,$this->adresse,$this->sexe]);
+        $result=$bdd->executeUpdate($sql,[$this->nomComplet,self::gestionDesRoles(),$this->login,$this->adresse,$this->sexe,$this->matricule,$this->password]);
         //fermeture de la connexion a la base de données
         $bdd->closeConnexion();
         return $result;
@@ -129,6 +133,18 @@ class Etudiant extends User{
     public function update():int{
         echo "Je souhaite mettre a jour les information d'un etudiant";
         return 0;
+    }
+
+    /**
+     * Set the value of classe
+     *
+     * @return  self
+     */ 
+    public function setClasse($classe)
+    {
+        $this->classe = $classe;
+
+        return $this;
     }
 }
 

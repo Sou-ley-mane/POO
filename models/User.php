@@ -3,7 +3,7 @@ namespace App\Model;
 abstract class User extends Personne{
     //les elements caracteristiques
     protected string $login;
-    protected string $password;
+    protected string $password="";
   
 //LES GETTERS ET LES SETTERS
     /**

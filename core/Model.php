@@ -57,7 +57,7 @@ return new Database();
                  $bdd=self::database();
                  //Application de la methode connexionBDD
                  $bdd->connexionBDD();
-                $result= $bdd->executeSelect("SELECT*FROM '".self::nomTable()."'WHERE id=?",[$id],true);
+                $result= $bdd->executeSelect("SELECT*FROM ".self::nomTable()." WHERE id=? ",[$id],true);
         //  $sql="SELECT*FROM '".self::nomTable()."'WHERE id=$id";
         //  echo $sql;
           //fermeture de la connexion a la base de données

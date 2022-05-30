@@ -1,4 +1,7 @@
 <?php
+//   if (session_status()==PHP_SESSION_NONE) {
+//     session_start();
+// }
 //Composer : outil de gestion de dependance (Gsetionnaire de dépendance)
 //Gestionnaire===>
 //Dependance==>Toute classe externe qu'on peut ajouter dans notre projet
@@ -10,6 +13,7 @@
 use App\Model\Attache;
 use App\Model\Personne;
 use App\Model\Professeur;
+use App\Model\ResponsablePedago;
 
 require_once("../vendor/autoload.php");
 require_once("../core/fonctions.php");

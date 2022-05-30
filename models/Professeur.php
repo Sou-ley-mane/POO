@@ -43,7 +43,7 @@ public function modules():array{
 
     //Rdefinition
     public static function findAll():array{
-        $sql="SELECT nom_complet, role, grade FROM ".parent::nomTable()." WHERE role  LIKE ? ";
+        $sql="SELECT id, nom_complet, role, grade FROM ".parent::nomTable()." WHERE role  LIKE ? ";
         return parent::findBy($sql,[self::gestionDesRoles()]);
     }
 

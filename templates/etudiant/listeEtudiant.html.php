@@ -1,8 +1,8 @@
 <div class="">
-<h1 class="bg-info"><?= $titre; ?></h1>
+<h1 class="text-center"><?= $titre; ?></h1>
 <table class="table">
-<tr class="text-center">
-      <td>N°</td>
+<tr class=" bg-dark">
+      <td">N°</td>
       <td>Nom Complet</td>
       <td>Grade</td>
       <td>Role</td>

@@ -5,7 +5,7 @@ use App\Model\User;
 
 class Session{
 
-    private User $user;
+private User $user;
 
 public function __construct()
 {
@@ -42,11 +42,16 @@ public function set(string $key,$data){
     public function setUser($user)
     {
         $this->user = $user;
-        $_SESSION["user_connect"]=$user;
+        // $_SESSION["user_connect"]=$user;
         return $this;
     }
+  /**
+     * Get the value of role
+     */ 
 
-    public function distroySession(){
-        //pour fermer la session
-    }
+     public static function getRoleUserSession(){
+         return ($_SESSION["user-connect"]->role);
+        //  dd("azerty");
+     }
+   
 }
