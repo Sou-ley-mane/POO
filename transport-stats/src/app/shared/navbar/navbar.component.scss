@@ -1,0 +1,175 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  height: var(--navbar-height);
+  background: var(--bg-navbar);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 24px;
+  z-index: 90;
+  transition: left var(--transition-base), background-color var(--transition-slow);
+  box-shadow: var(--shadow-sm);
+
+  .sidebar-collapsed & {
+    left: var(--sidebar-collapsed);
+  }
+
+  @media (max-width: 768px) {
+    left: 0;
+  }
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-btn {
+  display: none;
+  @media (max-width: 768px) { display: flex; }
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 200, 150, 0.1);
+  border: 1px solid rgba(0, 200, 150, 0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 6px var(--color-accent);
+  animation: pulse 2s infinite;
+}
+
+.live-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.current-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+
+  @media (max-width: 640px) { display: none; }
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.notif-btn {
+  .mat-badge-content {
+    font-size: 9px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+  }
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 8px;
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.35);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.45);
+  }
+}
+
+// ─── Notifications Menu ──────────────────────────────────────────────────────
+::ng-deep .notif-menu {
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+    min-width: 320px;
+  }
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  pointer-events: none;
+}
+
+.notif-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-warn);
+  background: rgba(244, 67, 54, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.notif-item {
+  padding: 10px 16px !important;
+
+  mat-icon { margin-right: 12px; }
+
+  .notif-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .notif-text {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: normal;
+    line-height: 1.4;
+  }
+
+  .notif-time {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+}
+
+.notif-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+
+  a {
+    font-size: 0.8rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover { text-decoration: underline; }
+  }
+}

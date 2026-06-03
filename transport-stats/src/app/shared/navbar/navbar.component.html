@@ -1,0 +1,81 @@
+<header class="navbar">
+  <div class="navbar-left">
+    <!-- Mobile menu toggle -->
+    <button mat-icon-button class="menu-btn" (click)="menuToggle.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <!-- Live indicator -->
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      <span class="live-text">EN DIRECT</span>
+    </div>
+
+    <!-- Current date/time -->
+    <span class="current-time">
+      {{ currentTime | date:'EEE dd MMM yyyy — HH:mm':'':'fr' }}
+    </span>
+  </div>
+
+  <div class="navbar-right">
+    <!-- Refresh -->
+    <button mat-icon-button matTooltip="Actualiser les données">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <!-- Notifications -->
+    <button mat-icon-button
+            [matMenuTriggerFor]="notifMenu"
+            matTooltip="Notifications"
+            class="notif-btn">
+      <mat-icon [matBadge]="notificationCount"
+                matBadgeColor="warn"
+                matBadgeSize="small">notifications</mat-icon>
+    </button>
+
+    <mat-menu #notifMenu="matMenu" class="notif-menu">
+      <div class="notif-header">
+        <span>Notifications</span>
+        <span class="notif-count">{{ notificationCount }} actives</span>
+      </div>
+      <button mat-menu-item *ngFor="let n of notifications" class="notif-item">
+        <mat-icon [style.color]="n.color">{{ n.icon }}</mat-icon>
+        <div class="notif-content">
+          <span class="notif-text">{{ n.text }}</span>
+          <span class="notif-time">Il y a {{ n.time }}</span>
+        </div>
+      </button>
+      <div class="notif-footer">
+        <a routerLink="/reports">Voir toutes les alertes</a>
+      </div>
+    </mat-menu>
+
+    <!-- Theme toggle -->
+    <button mat-icon-button
+            (click)="themeToggle.emit()"
+            [matTooltip]="isDark ? 'Mode clair' : 'Mode sombre'">
+      <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <!-- User avatar -->
+    <div class="user-avatar" [matMenuTriggerFor]="userMenu">
+      <span>AD</span>
+    </div>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Mon Profil</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Paramètres</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        <mat-icon>logout</mat-icon>
+        <span>Se déconnecter</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

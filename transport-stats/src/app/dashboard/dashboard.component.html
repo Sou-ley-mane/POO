@@ -1,0 +1,298 @@
+<div class="page-container dashboard">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Tableau de Bord</h2>
+      <p>Vue d'ensemble des statistiques de transport en temps réel</p>
+    </div>
+    <div class="header-actions">
+      <span class="last-refresh">
+        <mat-icon>update</mat-icon>
+        Actualisé à {{ lastRefresh | date:'HH:mm:ss' }}
+      </span>
+      <button mat-stroked-button class="period-btn"
+              [class.active]="selectedPeriod() === 'day'"
+              (click)="selectedPeriod.set('day')">Jour</button>
+      <button mat-stroked-button class="period-btn"
+              [class.active]="selectedPeriod() === 'week'"
+              (click)="selectedPeriod.set('week')">Semaine</button>
+      <button mat-stroked-button class="period-btn"
+              [class.active]="selectedPeriod() === 'month'"
+              (click)="selectedPeriod.set('month')">Mois</button>
+      <button mat-icon-button (click)="refresh()" matTooltip="Actualiser" class="refresh-btn">
+        <mat-icon [class.spinning]="loading()">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading skeleton -->
+  <ng-container *ngIf="loading()">
+    <div class="kpi-grid">
+      <div class="skeleton" style="height: 140px" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    </div>
+    <div class="charts-grid">
+      <div class="skeleton col-8" style="height: 360px"></div>
+      <div class="skeleton col-4" style="height: 360px"></div>
+    </div>
+  </ng-container>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid" *ngIf="!loading()">
+    <app-kpi-card
+      *ngFor="let kpi of kpis(); let i = index"
+      [kpi]="kpi"
+      [style.animation-delay]="(i * 80) + 'ms'">
+    </app-kpi-card>
+  </div>
+
+  <!-- Transport Overview Cards -->
+  <div class="transport-overview" *ngIf="!loading()">
+    <div class="transport-card" *ngFor="let stat of transportStats()"
+         [style.--t-color]="getTransportColor(stat.type)">
+      <div class="tc-header">
+        <div class="tc-icon">
+          <mat-icon [style.color]="getTransportColor(stat.type)">{{ getTransportIcon(stat.type) }}</mat-icon>
+        </div>
+        <div class="tc-info">
+          <h4>{{ stat.label }}</h4>
+          <span class="tc-passagers">{{ stat.passagers | number:'1.0-0' }} passagers</span>
+        </div>
+      </div>
+      <div class="tc-metrics">
+        <div class="tc-metric">
+          <span class="metric-label">Vitesse moy.</span>
+          <span class="metric-value">{{ stat.vitesseMoyenne }} km/h</span>
+        </div>
+        <div class="tc-metric">
+          <span class="metric-label">Retard moy.</span>
+          <span class="metric-value" [class.text-danger]="stat.retards > 5">{{ stat.retards }} min</span>
+        </div>
+        <div class="tc-metric">
+          <span class="metric-label">Occupation</span>
+          <span class="metric-value">{{ stat.tauxOccupation }}%</span>
+        </div>
+      </div>
+      <div class="tc-bar-wrap">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="stat.tauxOccupation"
+          class="tc-progress">
+        </mat-progress-bar>
+      </div>
+      <div class="tc-satisfaction">
+        <mat-icon>star</mat-icon>
+        <span>{{ stat.satisfaction }}/10</span>
+        <span class="tc-co2">
+          <mat-icon>eco</mat-icon>
+          {{ stat.emissionsCO2 }} g CO₂/km
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="charts-grid" *ngIf="!loading()">
+    <!-- Weekly bar chart -->
+    <div class="chart-card col-8">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Passagers par Mode — Semaine en cours</h3>
+          <p>Nombre de passagers par mode de transport et par jour</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-bar-chart
+          *ngIf="weeklyData()"
+          [data]="weeklyData()!">
+        </app-bar-chart>
+      </div>
+    </div>
+
+    <!-- Modal share doughnut -->
+    <div class="chart-card col-4">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Part Modale</h3>
+          <p>Répartition des passagers par mode</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-doughnut-chart
+          *ngIf="modalShareData()"
+          [data]="modalShareData()!"
+          centerLabel="Part modale"
+          centerValue="5 modes">
+        </app-doughnut-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2 -->
+  <div class="charts-grid" *ngIf="!loading()">
+    <!-- Monthly trend line -->
+    <div class="chart-card col-8">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Évolution Mensuelle des Passagers</h3>
+          <p>Tendance sur les 12 derniers mois — Bus, Métro, Train</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-line-chart
+          *ngIf="monthlyData()"
+          [data]="monthlyData()!"
+          [fill]="true"
+          [smooth]="true">
+        </app-line-chart>
+      </div>
+    </div>
+
+    <!-- CO2 doughnut -->
+    <div class="chart-card col-4">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Émissions CO₂</h3>
+          <p>g CO₂ par km par passager</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-doughnut-chart
+          *ngIf="co2Data()"
+          [data]="co2Data()!"
+          centerLabel="g/km/pax"
+          centerValue="57">
+        </app-doughnut-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 3 -->
+  <div class="charts-grid" *ngIf="!loading()">
+    <!-- Delay trend -->
+    <div class="chart-card col-6">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Évolution des Retards — 30 Jours</h3>
+          <p>Retard moyen en minutes par mode</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-line-chart
+          *ngIf="delayTrendData()"
+          [data]="delayTrendData()!"
+          [smooth]="true">
+        </app-line-chart>
+      </div>
+    </div>
+
+    <!-- Satisfaction trend -->
+    <div class="chart-card col-6">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Satisfaction Clients — Année en cours</h3>
+          <p>Note sur 10 par mode de transport</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <app-line-chart
+          *ngIf="satisfactionData()"
+          [data]="satisfactionData()!"
+          [smooth]="true"
+          [showPoints]="true">
+        </app-line-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Routes Performance + Alerts Row -->
+  <div class="charts-grid" *ngIf="!loading()">
+    <!-- Routes table -->
+    <div class="chart-card col-8 routes-card">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Performance des Lignes</h3>
+          <p>Principaux indicateurs par ligne</p>
+        </div>
+      </div>
+      <div class="routes-table-wrap">
+        <table class="routes-table">
+          <thead>
+            <tr>
+              <th>Ligne</th>
+              <th>Type</th>
+              <th>Passagers/j</th>
+              <th>Occupation</th>
+              <th>Ponctualité</th>
+              <th>Note</th>
+              <th>Tendance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of routes()">
+              <td class="route-name" [matTooltip]="r.route">
+                {{ r.route | slice:0:38 }}{{ r.route.length > 38 ? '…' : '' }}
+              </td>
+              <td>
+                <span class="type-chip" [style.background]="getTransportColor(r.transport) + '22'"
+                      [style.color]="getTransportColor(r.transport)">
+                  <mat-icon>{{ getTransportIcon(r.transport) }}</mat-icon>
+                </span>
+              </td>
+              <td class="mono">{{ r.avgPassagers | number:'1.0-0' }}</td>
+              <td>
+                <div class="occ-bar">
+                  <div class="occ-fill" [style.width.%]="r.avgOccupancy"
+                       [style.background]="getTransportColor(r.transport)"></div>
+                  <span>{{ r.avgOccupancy }}%</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge badge--{{ getPunctualityClass(r.punctuality) }}">
+                  {{ r.punctuality }}%
+                </span>
+              </td>
+              <td class="mono">
+                <span [class]="r.satisfaction >= 8 ? 'text-accent' : ''">{{ r.satisfaction }}</span>
+                <span class="text-muted">/10</span>
+              </td>
+              <td>
+                <mat-icon class="trend-{{ r.trend }}" [style.fontSize]="'18px'">
+                  {{ getTrendIcon(r.trend) }}
+                </mat-icon>
+                <span class="trend-pct trend-{{ r.trend }}">{{ r.trendPct }}%</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Alerts panel -->
+    <div class="chart-card col-4 alerts-card">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h3>Alertes Actives</h3>
+          <p>{{ activeAlerts.length }} perturbation(s) en cours</p>
+        </div>
+        <span class="badge badge--danger" *ngIf="activeAlerts.length > 0">
+          {{ activeAlerts.length }}
+        </span>
+      </div>
+      <div class="alerts-list">
+        <div *ngFor="let a of alerts()" [class]="alertClass(a.type)">
+          <mat-icon class="alert-icon">{{ alertIcon(a.type) }}</mat-icon>
+          <div class="alert-content">
+            <p class="alert-message">{{ a.message }}</p>
+            <div class="alert-meta">
+              <mat-icon>{{ getTransportIcon(a.transport) }}</mat-icon>
+              <span>{{ formatTime(a.timestamp) }}</span>
+              <span class="badge badge--success" *ngIf="a.resolved">Résolu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

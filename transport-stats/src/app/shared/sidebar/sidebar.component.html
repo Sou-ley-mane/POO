@@ -1,0 +1,78 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <!-- Logo / Brand -->
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-icon">
+        <mat-icon>directions_transit</mat-icon>
+      </div>
+      <span class="logo-text" *ngIf="!collapsed">
+        <span class="brand-name">Transport</span>
+        <span class="brand-tag">Stats</span>
+      </span>
+    </div>
+    <button class="collapse-btn" (click)="toggle()"
+            [matTooltip]="collapsed ? 'Développer' : 'Réduire'"
+            matTooltipPosition="right">
+      <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <p class="nav-section-label" *ngIf="!collapsed">Navigation</p>
+    <a *ngFor="let item of navItems"
+       [routerLink]="item.path"
+       routerLinkActive="active"
+       class="nav-item"
+       [matTooltip]="collapsed ? item.label : ''"
+       matTooltipPosition="right">
+      <div class="nav-icon">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="nav-badge" *ngIf="item.badge">{{ item.badge }}</span>
+      </div>
+      <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      <span class="nav-active-indicator"></span>
+    </a>
+  </nav>
+
+  <!-- Transport filters -->
+  <div class="sidebar-section" *ngIf="!collapsed">
+    <p class="nav-section-label">Modes de Transport</p>
+    <div class="transport-filters">
+      <button
+        *ngFor="let t of transportTypes"
+        class="transport-chip"
+        [class.active]="t.active"
+        [style.--chip-color]="t.color"
+        (click)="toggleTransport(t)"
+        [matTooltip]="t.label">
+        <mat-icon>{{ t.icon }}</mat-icon>
+        <span>{{ t.label }}</span>
+        <span class="chip-dot" [style.background]="t.active ? t.color : 'transparent'"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Transport icons only when collapsed -->
+  <div class="sidebar-section transport-icons-collapsed" *ngIf="collapsed">
+    <button
+      *ngFor="let t of transportTypes"
+      class="transport-icon-btn"
+      [class.active]="t.active"
+      [style.--chip-color]="t.color"
+      (click)="toggleTransport(t)"
+      [matTooltip]="t.label"
+      matTooltipPosition="right">
+      <mat-icon>{{ t.icon }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div class="version-badge" *ngIf="!collapsed">
+      <mat-icon>info_outline</mat-icon>
+      <span>v1.0.0 — Démo</span>
+    </div>
+    <mat-icon *ngIf="collapsed" class="footer-icon" matTooltip="v1.0.0" matTooltipPosition="right">info_outline</mat-icon>
+  </div>
+</aside>

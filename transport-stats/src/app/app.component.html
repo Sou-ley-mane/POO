@@ -1,0 +1,23 @@
+<div class="app-shell" [class.dark-theme]="isDark()" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Sidebar -->
+  <app-sidebar
+    [collapsed]="sidebarCollapsed()"
+    (toggleCollapse)="onSidebarToggle($event)">
+  </app-sidebar>
+
+  <!-- Main area -->
+  <div class="app-main">
+    <!-- Top Navbar -->
+    <app-navbar
+      [isDark]="isDark()"
+      [sidebarCollapsed]="sidebarCollapsed()"
+      (themeToggle)="onThemeToggle()"
+      (menuToggle)="onSidebarToggle(!sidebarCollapsed())">
+    </app-navbar>
+
+    <!-- Routed content -->
+    <main class="app-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

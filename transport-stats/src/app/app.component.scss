@@ -1,0 +1,32 @@
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-body);
+  transition: background-color var(--transition-slow);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-base);
+
+  .sidebar-collapsed & {
+    margin-left: var(--sidebar-collapsed);
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 0 !important;
+  }
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: var(--navbar-height);
+  background: var(--bg-body);
+  transition: background-color var(--transition-slow);
+}

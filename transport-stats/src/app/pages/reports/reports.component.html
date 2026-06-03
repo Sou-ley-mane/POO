@@ -1,0 +1,157 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h2>Rapports & Analyses</h2>
+      <p>Analyses détaillées des performances du réseau de transport</p>
+    </div>
+    <button mat-raised-button color="primary">
+      <mat-icon>download</mat-icon>
+      Exporter PDF
+    </button>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="report-summary">
+    <div class="summary-card" *ngFor="let r of reportTypes">
+      <mat-icon>{{ r.icon }}</mat-icon>
+      <div class="summary-info">
+        <span class="sum-label">{{ r.label }}</span>
+        <span class="sum-value">{{ r.value }}</span>
+        <span class="sum-trend" [class.up]="r.up">
+          <mat-icon>{{ r.up ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          {{ r.trend }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <mat-tab-group class="reports-tabs" animationDuration="200ms">
+
+    <!-- Tab 1: Fréquentation -->
+    <mat-tab label="Fréquentation">
+      <div class="tab-content">
+        <div class="charts-grid">
+          <div class="chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Passagers par Mode — Cette Semaine</h3>
+                <p>Vue comparative des 7 modes de transport</p>
+              </div>
+            </div>
+            <div class="chart-body" style="height: 320px">
+              <app-bar-chart *ngIf="weeklyData()" [data]="weeklyData()!"></app-bar-chart>
+            </div>
+          </div>
+          <div class="chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Évolution sur 12 Mois</h3>
+                <p>Tendance annuelle par mode de transport</p>
+              </div>
+            </div>
+            <div class="chart-body" style="height: 300px">
+              <app-line-chart *ngIf="monthlyData()" [data]="monthlyData()!" [fill]="true"></app-line-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tab 2: Performance -->
+    <mat-tab label="Performance">
+      <div class="tab-content">
+        <div class="charts-grid">
+          <div class="chart-card col-6">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Radar de Performance</h3>
+                <p>Comparaison multi-critères des modes de transport</p>
+              </div>
+            </div>
+            <div class="chart-body" style="height: 340px">
+              <app-doughnut-chart
+                *ngIf="radarData()"
+                [data]="radarData()!"
+                [showLegend]="true">
+              </app-doughnut-chart>
+            </div>
+          </div>
+          <div class="chart-card col-6">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Tendance des Retards — 30 Jours</h3>
+                <p>Évolution des retards moyens</p>
+              </div>
+            </div>
+            <div class="chart-body" style="height: 340px">
+              <app-line-chart *ngIf="delayData()" [data]="delayData()!" [smooth]="true"></app-line-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tab 3: Satisfaction -->
+    <mat-tab label="Satisfaction Clients">
+      <div class="tab-content">
+        <div class="charts-grid">
+          <div class="chart-card col-12">
+            <div class="chart-header">
+              <div class="chart-title">
+                <h3>Évolution de la Satisfaction Clients</h3>
+                <p>Note sur 10 — ensemble des modes de transport</p>
+              </div>
+            </div>
+            <div class="chart-body" style="height: 340px">
+              <app-line-chart
+                *ngIf="satData()"
+                [data]="satData()!"
+                [smooth]="true"
+                [showPoints]="true">
+              </app-line-chart>
+            </div>
+          </div>
+        </div>
+        <div class="satisfaction-breakdown">
+          <h3>Critères d'évaluation</h3>
+          <div class="criteria-grid">
+            <div class="criterion" *ngFor="let c of criteria">
+              <div class="crit-header">
+                <mat-icon>{{ c.icon }}</mat-icon>
+                <span>{{ c.label }}</span>
+                <span class="crit-score">{{ c.score }}/10</span>
+              </div>
+              <div class="crit-bar">
+                <div class="crit-fill" [style.width.%]="c.score * 10"
+                     [style.background]="c.score >= 8 ? 'var(--color-accent)' : c.score >= 6 ? 'var(--color-warning)' : 'var(--color-warn)'">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Tab 4: Alertes -->
+    <mat-tab label="Journal des Alertes">
+      <div class="tab-content">
+        <div class="alerts-journal">
+          <div *ngFor="let a of alerts()" class="journal-item" [class]="'journal--' + a.type">
+            <div class="journal-icon">
+              <mat-icon>{{ alertIcon(a.type) }}</mat-icon>
+            </div>
+            <div class="journal-body">
+              <p class="journal-msg">{{ a.message }}</p>
+              <div class="journal-meta">
+                <span class="badge" [class]="'badge--' + a.type">{{ a.type | uppercase }}</span>
+                <span class="journal-time">Il y a {{ formatTime(a.timestamp) }}</span>
+                <span class="badge badge--success" *ngIf="a.resolved">✓ Résolu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>
