@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Exemple de settings.xml pour la publication / résolution des artefacts via Nexus.
+
+    Usage :
+      - En local : copier ce fichier dans ~/.m2/settings.xml (ou passer -s settings.xml)
+        et définir les variables d'environnement NEXUS_USER / NEXUS_PASSWORD.
+      - En CI (Jenkins) : ce fichier est utilisé tel quel via `mvn -s settings.xml`,
+        les credentials proviennent alors du binding Jenkins "nexus-credentials"
+        exposé en tant que variables d'environnement NEXUS_CREDS_USR / NEXUS_CREDS_PSW.
+
+    Les identifiants de <server> ("nexus-releases", "nexus-snapshots") doivent correspondre
+    exactement aux <id> déclarés dans <distributionManagement> du pom.xml parent.
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+
+    <servers>
+        <server>
+            <id>nexus-releases</id>
+            <username>${env.NEXUS_CREDS_USR}</username>
+            <password>${env.NEXUS_CREDS_PSW}</password>
+        </server>
+        <server>
+            <id>nexus-snapshots</id>
+            <username>${env.NEXUS_CREDS_USR}</username>
+            <password>${env.NEXUS_CREDS_PSW}</password>
+        </server>
+    </servers>
+
+    <mirrors>
+        <!-- Optionnel : faire transiter toutes les résolutions par le proxy Nexus
+             (accélère les builds CI et évite la dépendance à Maven Central en direct). -->
+        <mirror>
+            <id>nexus-public</id>
+            <mirrorOf>*</mirrorOf>
+            <url>https://nexus.example.com/repository/maven-public/</url>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <properties>
+                <!-- Surchargeable en ligne de commande : mvn -Dnexus.url=https://nexus.interne/repository -->
+                <nexus.url>https://nexus.example.com/repository</nexus.url>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>nexus-public</id>
+                    <url>https://nexus.example.com/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>nexus-public</id>
+                    <url>https://nexus.example.com/repository/maven-public/</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
+</settings>

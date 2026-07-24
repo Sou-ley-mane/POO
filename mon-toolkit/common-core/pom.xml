@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.toolkit</groupId>
+        <artifactId>mon-toolkit-parent</artifactId>
+        <version>${revision}${changelist}${sha1}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>common-core</artifactId>
+    <packaging>jar</packaging>
+    <name>Mon Toolkit - Core</name>
+    <description>
+        Utilitaires génériques (dates, chaînes), mapping objet via MapStruct (BaseMapper) et
+        gestion fonctionnelle des erreurs (Result&lt;T&gt;). Socle sans dépendance métier,
+        utilisable par tous les autres modules.
+    </description>
+
+    <!-- À détailler : ce module ne contient pas encore de code source. -->
+    <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+    </dependencies>
+</project>

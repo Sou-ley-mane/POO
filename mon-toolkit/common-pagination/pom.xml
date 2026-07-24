@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.toolkit</groupId>
+        <artifactId>mon-toolkit-parent</artifactId>
+        <version>${revision}${changelist}${sha1}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>common-pagination</artifactId>
+    <packaging>jar</packaging>
+    <name>Mon Toolkit - Pagination</name>
+    <description>
+        Réponse paginée générique (PagedResponse&lt;T&gt;), résolution des query params
+        page/size/sort avec valeurs par défaut, et constructeur générique de Specification
+        JPA pour le filtrage dynamique.
+    </description>
+
+    <dependencies>
+        <!-- Pageable/PageRequest/Sort (spring-data-commons) + Specification (spring-data-jpa),
+             sans tirer de driver JDBC ni d'auto-configuration : le consommateur choisit sa
+             propre persistance. -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

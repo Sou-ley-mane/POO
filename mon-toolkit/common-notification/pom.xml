@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.toolkit</groupId>
+        <artifactId>mon-toolkit-parent</artifactId>
+        <version>${revision}${changelist}${sha1}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>common-notification</artifactId>
+    <packaging>jar</packaging>
+    <name>Mon Toolkit - Notification</name>
+    <description>
+        Envoi de notifications multi-canal (Email via Spring Mail/SendGrid, SMS via Twilio,
+        Webhook) asynchrone (@Async), avec retry Resilience4j, traçabilité (NotificationLog)
+        et templates Thymeleaf.
+    </description>
+
+    <!-- À détailler : ce module ne contient pas encore de code source. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.toolkit</groupId>
+            <artifactId>common-exceptions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+        </dependency>
+    </dependencies>
+</project>

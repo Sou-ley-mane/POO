@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.toolkit</groupId>
+        <artifactId>mon-toolkit-parent</artifactId>
+        <version>${revision}${changelist}${sha1}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>common-storage</artifactId>
+    <packaging>jar</packaging>
+    <name>Mon Toolkit - Storage</name>
+    <description>
+        Interface StorageService (upload, download, delete, URL pré-signée) avec implémentation
+        S3-compatible (AWS S3 / MinIO), validation de type MIME et de taille de fichier.
+    </description>
+
+    <!-- À détailler : ce module ne contient pas encore de code source. -->
+    <dependencies>
+        <dependency>
+            <groupId>com.toolkit</groupId>
+            <artifactId>common-exceptions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+    </dependencies>
+</project>

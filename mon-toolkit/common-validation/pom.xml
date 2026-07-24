@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.toolkit</groupId>
+        <artifactId>mon-toolkit-parent</artifactId>
+        <version>${revision}${changelist}${sha1}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>common-validation</artifactId>
+    <packaging>jar</packaging>
+    <name>Mon Toolkit - Validation</name>
+    <description>
+        Annotations de validation Bean Validation custom (@ValidPhoneNumber, @ValidEnum,
+        @ValidPassword) avec messages centralisés en i18n (FR/EN).
+    </description>
+
+    <!-- À détailler : ce module ne contient pas encore de code source. -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+    </dependencies>
+</project>

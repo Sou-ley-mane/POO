@@ -1,0 +1,219 @@
+/**
+ * Pipeline déclaratif Jenkins pour "mon-toolkit".
+ *
+ * Prérequis Jenkins :
+ *   - Plugin "Pipeline Maven Integration" (withMaven) configuré avec un outil Maven nommé "maven-3.9"
+ *   - Un JDK 21 déclaré dans "Global Tool Configuration" sous le nom "jdk-21"
+ *   - Credentials :
+ *       - "nexus-credentials"   (Username/Password)  -> déploiement Nexus
+ *       - "sonarqube-token"     (Secret text)         -> analyse SonarQube
+ *       - "slack-webhook"       (Secret text)         -> notification Slack
+ *   - Un serveur SonarQube nommé "sonarqube" déclaré dans "Configure System"
+ *   - Docker (ou docker.sock monté) disponible sur l'agent pour Testcontainers
+ */
+pipeline {
+
+    agent {
+        docker {
+            image 'eclipse-temurin:21-jdk'
+            args '-v /var/run/docker.sock:/var/run/docker.sock ' +
+                 '-v $HOME/.m2:/root/.m2'
+        }
+    }
+
+    parameters {
+        booleanParam(
+            name: 'FORCE_DEPLOY',
+            defaultValue: false,
+            description: 'Forcer le déploiement vers Nexus même hors branche main (usage exceptionnel).'
+        )
+        string(
+            name: 'RELEASE_VERSION',
+            defaultValue: '',
+            description: 'Optionnel : version sémantique explicite à publier (ex: 1.4.0). Laisser vide pour un déploiement snapshot automatique.'
+        )
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timestamps()
+        disableConcurrentBuilds()
+        timeout(time: 45, unit: 'MINUTES')
+    }
+
+    triggers {
+        // Déclenchement via webhook Git (push + PR) configuré côté SCM ;
+        // ce trigger sert de filet de sécurité (polling léger) si le webhook est indisponible.
+        pollSCM('H/15 * * * *')
+    }
+
+    environment {
+        MAVEN_OPTS       = '-Xmx1024m'
+        NEXUS_CREDS      = credentials('nexus-credentials')
+        SONAR_TOKEN      = credentials('sonarqube-token')
+        SLACK_WEBHOOK    = credentials('slack-webhook')
+        JACOCO_THRESHOLD = '0.70'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.GIT_TAG          = sh(script: 'git describe --tags --exact-match 2>/dev/null || true', returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    sh 'mvn -B -ntp clean compile'
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    sh 'mvn -B -ntp test'
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    // Testcontainers a besoin du socket Docker monté sur l'agent (voir bloc `agent`).
+                    sh 'mvn -B -ntp verify -DskipUnitTests=true -Dsurefire.skip=true'
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
+                    jacoco(
+                        execPattern: '**/target/jacoco.exec',
+                        classPattern: '**/target/classes',
+                        sourcePattern: '**/src/main/java',
+                        minimumLineCoverage: "${env.JACOCO_THRESHOLD}",
+                        changeBuildStatus: true
+                    )
+                }
+            }
+        }
+
+        stage('Analyse qualité (SonarQube)') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    withSonarQubeEnv('sonarqube') {
+                        sh '''
+                            mvn -B -ntp sonar:sonar \
+                                -Dsonar.login=$SONAR_TOKEN \
+                                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                // Bloque explicitement le pipeline si le Quality Gate SonarQube échoue.
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Scan de vulnérabilités (OWASP)') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    sh 'mvn -B -ntp org.owasp:dependency-check-maven:check'
+                }
+            }
+            post {
+                always {
+                    dependencyCheckPublisher pattern: '**/target/dependency-check-report.json'
+                }
+            }
+        }
+
+        stage('Packaging') {
+            steps {
+                withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                    sh 'mvn -B -ntp package -DskipTests'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true, allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Publication Nexus') {
+            when {
+                anyOf {
+                    expression { env.BRANCH_NAME == 'main' }
+                    expression { params.FORCE_DEPLOY == true }
+                }
+            }
+            steps {
+                script {
+                    // Versioning sémantique automatique basé sur les tags Git (schéma "CI friendly versions").
+                    // - Un tag Git (ex: v1.4.0) ou RELEASE_VERSION => déploiement en tant que release.
+                    // - Sinon (main/develop) => déploiement en snapshot horodaté.
+                    def isRelease = (env.GIT_TAG?.trim() as boolean) || (params.RELEASE_VERSION?.trim() as boolean)
+                    def revision  = params.RELEASE_VERSION?.trim() ?: env.GIT_TAG?.trim()?.replaceFirst('^v', '') ?: '0.0.0'
+                    def changelist = isRelease ? '' : "-SNAPSHOT-${env.GIT_COMMIT_SHORT}"
+
+                    withMaven(maven: 'maven-3.9', jdk: 'jdk-21') {
+                        sh """
+                            mvn -B -ntp deploy -DskipTests \
+                                -Drevision=${revision} \
+                                -Dchangelist=${changelist} \
+                                -s settings.xml
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            slackNotify(
+                color: 'good',
+                message: ":white_check_mark: *${env.JOB_NAME}* #${env.BUILD_NUMBER} réussi sur `${env.BRANCH_NAME}` (${env.GIT_COMMIT_SHORT})\n${env.BUILD_URL}"
+            )
+        }
+        failure {
+            slackNotify(
+                color: 'danger',
+                message: ":x: *${env.JOB_NAME}* #${env.BUILD_NUMBER} en échec sur `${env.BRANCH_NAME}` (${env.GIT_COMMIT_SHORT})\n${env.BUILD_URL}console"
+            )
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
+
+/**
+ * Envoie une notification Slack via webhook entrant (générique, sans dépendre du plugin Slack natif),
+ * pour rester portable quel que soit l'outillage Jenkins disponible.
+ */
+void slackNotify(Map args) {
+    sh """
+        curl -s -X POST -H 'Content-type: application/json' \
+            --data '{"text": "${args.message}"}' \
+            "\$SLACK_WEBHOOK" || true
+    """
+}
