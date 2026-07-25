@@ -6,6 +6,7 @@
       <a routerLink="/vehicules">Véhicules</a>
       <a routerLink="/chauffeurs">Chauffeurs</a>
       <a routerLink="/versements">Versements</a>
+      <a *ngIf="authService.role() === 'ADMIN_GIE'" routerLink="/equipe">Équipe</a>
       <a routerLink="/parametres">Paramètres</a>
     </ng-container>
     <a *ngIf="authService.role() === 'SUPER_ADMIN'" routerLink="/administration-gie">Administration des GIE</a>

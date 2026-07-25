@@ -38,6 +38,12 @@ export const routes: Routes = [
       import('./features/admin/parametres-gie/parametres-gie.component').then((m) => m.ParametresGieComponent)
   },
   {
+    path: 'equipe',
+    canActivate: [authGuard, roleGuard(['ADMIN_GIE'])],
+    loadComponent: () =>
+      import('./features/admin/equipe-gie/equipe-gie.component').then((m) => m.EquipeGieComponent)
+  },
+  {
     path: 'administration-gie',
     canActivate: [authGuard, roleGuard(['SUPER_ADMIN'])],
     loadComponent: () =>

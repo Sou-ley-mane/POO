@@ -1,0 +1,62 @@
+<div class="page-header">
+  <h1>Équipe du GIE</h1>
+  <button class="btn-primary" (click)="afficherFormulaire.set(!afficherFormulaire())">
+    {{ afficherFormulaire() ? 'Annuler' : '+ Nouveau gestionnaire' }}
+  </button>
+</div>
+
+<form class="form-card" *ngIf="afficherFormulaire()" (ngSubmit)="creerGestionnaire()">
+  <label>
+    Prénom
+    <input name="prenom" [(ngModel)]="nouveau.prenom" required />
+  </label>
+  <label>
+    Nom
+    <input name="nom" [(ngModel)]="nouveau.nom" required />
+  </label>
+  <label>
+    Téléphone (identifiant de connexion)
+    <input name="telephone" [(ngModel)]="nouveau.telephone" required placeholder="+221771234567" />
+  </label>
+  <label>
+    Email (optionnel)
+    <input type="email" name="email" [(ngModel)]="nouveau.email" />
+  </label>
+  <label>
+    PIN initial (4 chiffres)
+    <input name="pinInitial" [(ngModel)]="nouveau.pinInitial" required maxlength="4" pattern="\d{4}" inputmode="numeric" />
+  </label>
+
+  <p class="erreur" *ngIf="erreur()">{{ erreur() }}</p>
+
+  <button type="submit" class="btn-primary">Créer le gestionnaire</button>
+</form>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Nom complet</th>
+      <th>Téléphone</th>
+      <th>Rôle</th>
+      <th>Statut</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of equipe()">
+      <td>{{ u.prenom }} {{ u.nom }}</td>
+      <td>{{ u.telephone }}</td>
+      <td>{{ u.role }}</td>
+      <td>{{ u.statut }}</td>
+      <td>
+        <ng-container *ngIf="u.role === 'GESTIONNAIRE'">
+          <button *ngIf="u.statut === 'ACTIF'" class="btn-lien" (click)="changerStatut(u, 'SUSPENDU')">Suspendre</button>
+          <button *ngIf="u.statut !== 'ACTIF'" class="btn-lien" (click)="changerStatut(u, 'ACTIF')">Réactiver</button>
+        </ng-container>
+      </td>
+    </tr>
+    <tr *ngIf="equipe().length === 0">
+      <td colspan="5">Aucun membre d'équipe enregistré.</td>
+    </tr>
+  </tbody>
+</table>

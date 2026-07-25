@@ -94,6 +94,25 @@ export interface SaisieVersementRequest {
   fraisAppliquesIds?: number[] | null;
 }
 
+export interface UtilisateurDto {
+  id: number;
+  nom: string;
+  prenom: string;
+  telephone: string;
+  email: string | null;
+  role: 'ADMIN_GIE' | 'GESTIONNAIRE';
+  statut: string;
+  doitChangerPin: boolean;
+}
+
+export interface CreateGestionnaireRequest {
+  nom: string;
+  prenom: string;
+  telephone: string;
+  email?: string;
+  pinInitial: string;
+}
+
 export interface DashboardStatsDto {
   totalCollecteJour: number;
   totalCollecteSemaine: number;
