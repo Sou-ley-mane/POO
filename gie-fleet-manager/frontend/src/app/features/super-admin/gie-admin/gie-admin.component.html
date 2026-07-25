@@ -1,0 +1,80 @@
+<div class="page-header">
+  <h1>Administration des GIE</h1>
+  <button class="btn-primary" (click)="afficherFormulaire.set(!afficherFormulaire())">
+    {{ afficherFormulaire() ? 'Annuler' : '+ Nouveau GIE' }}
+  </button>
+</div>
+
+<form class="form-card" *ngIf="afficherFormulaire()" (ngSubmit)="creerGie()">
+  <label>
+    Nom du GIE
+    <input name="nom" [(ngModel)]="nouveau.nom" required />
+  </label>
+  <label>
+    Sigle
+    <input name="sigle" [(ngModel)]="nouveau.sigle" required />
+  </label>
+  <label>
+    Adresse
+    <input name="adresse" [(ngModel)]="nouveau.adresse" />
+  </label>
+  <label>
+    Téléphone du GIE
+    <input name="telephone" [(ngModel)]="nouveau.telephone" />
+  </label>
+  <label>
+    Email du GIE
+    <input type="email" name="email" [(ngModel)]="nouveau.email" />
+  </label>
+
+  <fieldset>
+    <legend>Compte administrateur initial</legend>
+    <label>
+      Prénom de l'admin
+      <input name="prenomAdmin" [(ngModel)]="nouveau.prenomAdmin" required />
+    </label>
+    <label>
+      Nom de l'admin
+      <input name="nomAdmin" [(ngModel)]="nouveau.nomAdmin" required />
+    </label>
+    <label>
+      Téléphone de l'admin (identifiant de connexion)
+      <input name="telephoneAdmin" [(ngModel)]="nouveau.telephoneAdmin" required placeholder="+221771234567" />
+    </label>
+    <label>
+      PIN initial (4 chiffres)
+      <input name="pinInitialAdmin" [(ngModel)]="nouveau.pinInitialAdmin" required maxlength="4" pattern="\d{4}" inputmode="numeric" />
+    </label>
+  </fieldset>
+
+  <p class="erreur" *ngIf="erreur()">{{ erreur() }}</p>
+
+  <button type="submit" class="btn-primary">Créer le GIE</button>
+</form>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Sigle</th>
+      <th>Téléphone</th>
+      <th>Statut</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let g of gies()">
+      <td>{{ g.nom }}</td>
+      <td>{{ g.sigle }}</td>
+      <td>{{ g.telephone }}</td>
+      <td>{{ g.statut }}</td>
+      <td>
+        <button *ngIf="g.statut === 'ACTIF'" class="btn-lien" (click)="suspendre(g)">Suspendre</button>
+        <button *ngIf="g.statut !== 'ACTIF'" class="btn-lien" (click)="reactiver(g)">Réactiver</button>
+      </td>
+    </tr>
+    <tr *ngIf="gies().length === 0">
+      <td colspan="5">Aucun GIE enregistré sur la plateforme.</td>
+    </tr>
+  </tbody>
+</table>

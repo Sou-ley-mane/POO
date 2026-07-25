@@ -1,0 +1,29 @@
+fieldset {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+
+  legend {
+    font-weight: 600;
+    padding: 0 0.5rem;
+  }
+}
+
+.erreur {
+  grid-column: 1 / -1;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.btn-lien {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  padding: 0;
+  font-size: 0.85rem;
+}

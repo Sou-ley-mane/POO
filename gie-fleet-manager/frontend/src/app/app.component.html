@@ -2,10 +2,13 @@
   <div class="brand">GIE Fleet Manager</div>
   <nav>
     <a routerLink="/tableau-de-bord">Tableau de bord</a>
-    <a routerLink="/vehicules">Véhicules</a>
-    <a routerLink="/chauffeurs">Chauffeurs</a>
-    <a routerLink="/versements">Versements</a>
-    <a routerLink="/parametres">Paramètres</a>
+    <ng-container *ngIf="authService.role() !== 'SUPER_ADMIN'">
+      <a routerLink="/vehicules">Véhicules</a>
+      <a routerLink="/chauffeurs">Chauffeurs</a>
+      <a routerLink="/versements">Versements</a>
+      <a routerLink="/parametres">Paramètres</a>
+    </ng-container>
+    <a *ngIf="authService.role() === 'SUPER_ADMIN'" routerLink="/administration-gie">Administration des GIE</a>
   </nav>
   <button class="btn-accent" (click)="seDeconnecter()">Déconnexion</button>
 </header>

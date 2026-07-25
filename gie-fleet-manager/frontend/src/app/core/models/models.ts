@@ -27,6 +27,18 @@ export interface GieDto {
   statut: string;
 }
 
+export interface CreateGieRequest {
+  nom: string;
+  sigle: string;
+  adresse?: string;
+  telephone?: string;
+  email?: string;
+  telephoneAdmin: string;
+  pinInitialAdmin: string;
+  nomAdmin: string;
+  prenomAdmin: string;
+}
+
 export interface VehiculeDto {
   id: number;
   immatriculation: string;

@@ -37,5 +37,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/admin/parametres-gie/parametres-gie.component').then((m) => m.ParametresGieComponent)
   },
+  {
+    path: 'administration-gie',
+    canActivate: [authGuard, roleGuard(['SUPER_ADMIN'])],
+    loadComponent: () =>
+      import('./features/super-admin/gie-admin/gie-admin.component').then((m) => m.GieAdminComponent)
+  },
   { path: '**', redirectTo: 'tableau-de-bord' }
 ];
