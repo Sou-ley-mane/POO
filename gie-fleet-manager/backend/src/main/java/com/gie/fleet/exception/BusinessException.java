@@ -1,0 +1,8 @@
+package com.gie.fleet.exception;
+
+public class BusinessException extends RuntimeException {
+
+    public BusinessException(String message) {
+        super(message);
+    }
+}

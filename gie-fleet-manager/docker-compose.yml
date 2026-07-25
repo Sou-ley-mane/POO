@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gie_fleet
+      POSTGRES_USER: gie_fleet
+      POSTGRES_PASSWORD: gie_fleet
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gie_fleet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: gie_fleet
+      DB_USER: gie_fleet
+      DB_PASSWORD: gie_fleet
+      JWT_SECRET: ${JWT_SECRET:-changeme-super-secret-key-please-override-in-production-min-256bits}
+      SUPER_ADMIN_TELEPHONE: ${SUPER_ADMIN_TELEPHONE:-+000000000}
+      SUPER_ADMIN_PIN_INITIAL: ${SUPER_ADMIN_PIN_INITIAL:-0000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
+volumes:
+  postgres_data:

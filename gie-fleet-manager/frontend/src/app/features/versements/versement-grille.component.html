@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h1>Grille des versements</h1>
+  <button class="btn-primary" (click)="afficherFormulaire.set(!afficherFormulaire())">
+    {{ afficherFormulaire() ? 'Annuler' : '+ Saisir un versement' }}
+  </button>
+</div>
+
+<form class="form-card" *ngIf="afficherFormulaire()" (ngSubmit)="saisirVersement()">
+  <label>
+    Chauffeur
+    <select name="chauffeur" [(ngModel)]="saisie.chauffeurId" required>
+      <option [ngValue]="null">-- choisir --</option>
+      <option *ngFor="let c of chauffeurs()" [ngValue]="c.id">{{ c.prenom }} {{ c.nom }}</option>
+    </select>
+  </label>
+  <label>
+    Montant versé
+    <input type="number" name="montant" [(ngModel)]="saisie.montantVerse" required min="0" />
+  </label>
+  <label>
+    Mode de paiement
+    <select name="mode" [(ngModel)]="saisie.modePaiement">
+      <option value="ESPECES">Espèces</option>
+      <option value="MOBILE_MONEY">Mobile Money</option>
+      <option value="VIREMENT">Virement</option>
+    </select>
+  </label>
+  <button type="submit" class="btn-primary">Enregistrer</button>
+</form>
+
+<div class="table-scroll">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Véhicule</th>
+        <th>Chauffeur</th>
+        <th *ngFor="let colonne of colonnesFrais()">{{ colonne }}</th>
+        <th>Montant attendu</th>
+        <th>Montant versé</th>
+        <th>Reste</th>
+        <th>Statut</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ligne of lignes()">
+        <td>{{ ligne.vehiculeImmatriculation }}</td>
+        <td>{{ ligne.chauffeurNomComplet }}</td>
+        <td *ngFor="let colonne of colonnesFrais()">{{ ligne.montantParTypeFrais[colonne] ?? 0 }}</td>
+        <td>{{ ligne.montantAttendu }}</td>
+        <td>{{ ligne.montantVerse }}</td>
+        <td>{{ ligne.reste }}</td>
+        <td><app-status-badge [statut]="ligne.statut"></app-status-badge></td>
+      </tr>
+      <tr *ngIf="lignes().length === 0">
+        <td [attr.colspan]="colonnesFrais().length + 5">Aucun versement enregistré pour l'instant.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

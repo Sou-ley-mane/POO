@@ -1,0 +1,51 @@
+<div class="dashboard" *ngIf="stats() as s">
+  <div class="cards">
+    <div class="card">
+      <span class="label">Collecté aujourd'hui</span>
+      <span class="value">{{ s.totalCollecteJour | number: '1.0-0' }} F</span>
+    </div>
+    <div class="card">
+      <span class="label">Collecté cette semaine</span>
+      <span class="value">{{ s.totalCollecteSemaine | number: '1.0-0' }} F</span>
+    </div>
+    <div class="card">
+      <span class="label">Collecté ce mois</span>
+      <span class="value">{{ s.totalCollecteMois | number: '1.0-0' }} F</span>
+    </div>
+    <div class="card danger">
+      <span class="label">Total impayés</span>
+      <span class="value">{{ s.totalRestesCumules | number: '1.0-0' }} F</span>
+    </div>
+    <div class="card">
+      <span class="label">Véhicules actifs</span>
+      <span class="value">{{ s.nombreVehiculesActifs }}</span>
+    </div>
+    <div class="card">
+      <span class="label">Chauffeurs actifs</span>
+      <span class="value">{{ s.nombreChauffeursActifs }}</span>
+    </div>
+  </div>
+
+  <div class="top-retards">
+    <h2>Top retards de paiement</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Chauffeur</th>
+          <th>Montant dû</th>
+          <th>Périodes en retard</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of s.topRetards">
+          <td>{{ r.chauffeurNomComplet }}</td>
+          <td>{{ r.reste | number: '1.0-0' }} F</td>
+          <td>{{ r.nombrePeriodesEnRetard }}</td>
+        </tr>
+        <tr *ngIf="s.topRetards.length === 0">
+          <td colspan="3">Aucun retard, tout est à jour.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

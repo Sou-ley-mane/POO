@@ -1,0 +1,82 @@
+<div class="page-header">
+  <h1>Paramètres du GIE</h1>
+</div>
+
+<section class="panel" *ngIf="gie() as g">
+  <h2>{{ g.nom }} ({{ g.sigle }})</h2>
+
+  <h3>Thème (marque blanche)</h3>
+  <form class="form-card" (ngSubmit)="enregistrerTheme()">
+    <label>
+      Couleur primaire
+      <input type="color" name="couleurPrimaire" [(ngModel)]="theme.couleurPrimaire" />
+    </label>
+    <label>
+      Couleur secondaire
+      <input type="color" name="couleurSecondaire" [(ngModel)]="theme.couleurSecondaire" />
+    </label>
+    <label>
+      Couleur accent
+      <input type="color" name="couleurAccent" [(ngModel)]="theme.couleurAccent" />
+    </label>
+    <button type="submit" class="btn-primary">Enregistrer le thème</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="page-header">
+    <h3>Types de frais</h3>
+    <button class="btn-primary" (click)="afficherFormulaireFrais.set(!afficherFormulaireFrais())">
+      {{ afficherFormulaireFrais() ? 'Annuler' : '+ Nouveau type de frais' }}
+    </button>
+  </div>
+
+  <form class="form-card" *ngIf="afficherFormulaireFrais()" (ngSubmit)="creerTypeFrais()">
+    <label>
+      Libellé
+      <input name="libelle" [(ngModel)]="nouveauTypeFrais.libelle" required placeholder="Assurance" />
+    </label>
+    <label>
+      Montant
+      <input type="number" name="montant" [(ngModel)]="nouveauTypeFrais.montant" required min="0" />
+    </label>
+    <label>
+      Périodicité
+      <select name="periodicite" [(ngModel)]="nouveauTypeFrais.periodicite">
+        <option value="HEBDOMADAIRE">Hebdomadaire</option>
+        <option value="BIMENSUELLE">Bimensuelle</option>
+        <option value="TRIMENSUELLE">Trimensuelle</option>
+        <option value="MENSUELLE">Mensuelle</option>
+      </select>
+    </label>
+    <button type="submit" class="btn-primary">Enregistrer</button>
+  </form>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Libellé</th>
+        <th>Montant</th>
+        <th>Périodicité</th>
+        <th>Actif</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of typesFrais()">
+        <td>{{ t.libelle }}</td>
+        <td>{{ t.montant }} F</td>
+        <td>{{ t.periodicite }}</td>
+        <td>{{ t.actif ? 'Oui' : 'Non' }}</td>
+        <td>
+          <button class="btn-accent" (click)="activerDesactiver(t.id, t.actif)">
+            {{ t.actif ? 'Désactiver' : 'Activer' }}
+          </button>
+        </td>
+      </tr>
+      <tr *ngIf="typesFrais().length === 0">
+        <td colspan="5">Aucun type de frais paramétré.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>

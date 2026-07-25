@@ -1,0 +1,70 @@
+<div class="page-header">
+  <h1>Chauffeurs</h1>
+  <button class="btn-primary" (click)="afficherFormulaire.set(!afficherFormulaire())">
+    {{ afficherFormulaire() ? 'Annuler' : '+ Nouveau chauffeur' }}
+  </button>
+</div>
+
+<form class="form-card" *ngIf="afficherFormulaire()" (ngSubmit)="creerChauffeur()">
+  <label>
+    Nom
+    <input name="nom" [(ngModel)]="nouveau.nom" required />
+  </label>
+  <label>
+    Prénom
+    <input name="prenom" [(ngModel)]="nouveau.prenom" required />
+  </label>
+  <label>
+    Téléphone
+    <input name="telephone" [(ngModel)]="nouveau.telephone" />
+  </label>
+  <label>
+    Périodicité
+    <select name="periodicite" [(ngModel)]="nouveau.periodiciteVersement">
+      <option value="HEBDOMADAIRE">Hebdomadaire</option>
+      <option value="BIMENSUELLE">Bimensuelle (2 semaines)</option>
+      <option value="TRIMENSUELLE">Trimensuelle (3 semaines)</option>
+      <option value="MENSUELLE">Mensuelle</option>
+    </select>
+  </label>
+  <label>
+    Montant attendu / période
+    <input type="number" name="montant" [(ngModel)]="nouveau.montantAttenduParPeriode" />
+  </label>
+  <button type="submit" class="btn-primary">Enregistrer</button>
+</form>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Nom complet</th>
+      <th>Téléphone</th>
+      <th>Périodicité</th>
+      <th>Montant attendu</th>
+      <th>Véhicule affecté</th>
+      <th>Affecter à</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of chauffeurs()">
+      <td>{{ c.prenom }} {{ c.nom }}</td>
+      <td>{{ c.telephone }}</td>
+      <td>{{ c.periodiciteVersement }}</td>
+      <td>{{ c.montantAttenduParPeriode }} F</td>
+      <td>
+        {{ c.vehiculeAffecteImmatriculation ?? 'Aucun' }}
+        <button *ngIf="c.vehiculeAffecteId" (click)="retirerAffectation(c.id)" class="btn-lien">Retirer</button>
+      </td>
+      <td>
+        <select [(ngModel)]="vehiculeChoisiParChauffeur[c.id]" [ngModelOptions]="{ standalone: true }">
+          <option [ngValue]="null">-- véhicule --</option>
+          <option *ngFor="let v of vehicules()" [ngValue]="v.id">{{ v.immatriculation }}</option>
+        </select>
+        <button class="btn-primary" (click)="affecter(c.id)">Affecter</button>
+      </td>
+    </tr>
+    <tr *ngIf="chauffeurs().length === 0">
+      <td colspan="6">Aucun chauffeur enregistré.</td>
+    </tr>
+  </tbody>
+</table>

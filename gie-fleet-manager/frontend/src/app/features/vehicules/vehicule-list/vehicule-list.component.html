@@ -1,0 +1,54 @@
+<div class="page-header">
+  <h1>Véhicules</h1>
+  <button class="btn-primary" (click)="afficherFormulaire.set(!afficherFormulaire())">
+    {{ afficherFormulaire() ? 'Annuler' : '+ Nouveau véhicule' }}
+  </button>
+</div>
+
+<form class="form-card" *ngIf="afficherFormulaire()" (ngSubmit)="creerVehicule()">
+  <label>
+    Immatriculation
+    <input name="immatriculation" [(ngModel)]="nouveau.immatriculation" required placeholder="DK-2344-H" />
+  </label>
+  <label>
+    Marque
+    <input name="marque" [(ngModel)]="nouveau.marque" />
+  </label>
+  <label>
+    Modèle
+    <input name="modele" [(ngModel)]="nouveau.modele" />
+  </label>
+  <label>
+    Année
+    <input type="number" name="annee" [(ngModel)]="nouveau.annee" />
+  </label>
+  <label>
+    Couleur
+    <input name="couleur" [(ngModel)]="nouveau.couleur" />
+  </label>
+  <button type="submit" class="btn-primary">Enregistrer</button>
+</form>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Immatriculation</th>
+      <th>Marque / Modèle</th>
+      <th>Année</th>
+      <th>Statut</th>
+      <th>Chauffeur actuel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of vehicules()">
+      <td>{{ v.immatriculation }}</td>
+      <td>{{ v.marque }} {{ v.modele }}</td>
+      <td>{{ v.annee }}</td>
+      <td>{{ v.statut }}</td>
+      <td>{{ v.chauffeurActuelNomComplet ?? 'Non affecté' }}</td>
+    </tr>
+    <tr *ngIf="vehicules().length === 0">
+      <td colspan="5">Aucun véhicule enregistré.</td>
+    </tr>
+  </tbody>
+</table>
